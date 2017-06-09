@@ -7,45 +7,37 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
 </p>
 
-## About Laravel
+## Yêu cầu
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+Viết một tool tự động follow twitter account bởi hashtag nhập vào với yêu cầu chi tiết như dưới đây:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Tạo một form cho nhập vào một hashtag bất kỳ.
+- Viết một batch chạy một tiếng một lần, tìm tất cả các tweet chứa hashtag trên, đồng thời xử lý follow twitter account đã đăng tweet đó. (bắt buộc)
+- Xử lý hiển thị tất cả twitter account đã follow được thông qua tool này.
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb combination of simplicity, elegance, and innovation give you tools you need to build any application with which you are tasked.
+Chương trình bằng ngôn ngữ PHP (Framework hoặc PHP thuần) không quá 4 tiếng
+## Các bước thực hiện
 
-## Learning Laravel
+- Phân tích yêu cầu:
+   + Tìm các keyword trong yêu cầu: twitter, hashtag, search, follow, batch chạy một tiếng một lần
+   + Do thông thạo Laravel, thời gian code chỉ 4 tiếng nên sẽ tìm kiếm thư viện sẵn có thay vì đọc docs api của twitter để viết từ đầu
+    + Tìm kiếm với cụm keyword: "laravel follow twitter account by hashtag"
 
-Laravel has the most extensive and thorough documentation and video tutorial library of any modern web application framework. The [Laravel documentation](https://laravel.com/docs) is thorough, complete, and makes it a breeze to get started learning the framework.
+- Thực hiện:
+  + Sử dụng thư viện thujohn/twitter https://github.com/thujohn/twitter
+  + Sử dụng Task Scheduling của Laravel để cronjob https://laravel.com/docs/5.4/scheduling
+## Quy trình cronjob
+- Trên server, ta chỉ cần thêm dong lệnh sau vào file cron
+ ```
+ * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
+ ```
+ Nó sẽ gọi đến file app/Console/Kernel.php
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 900 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+## Mô tả hoạt động của project
 
-## Laravel Sponsors
+- Hashtag sẽ được save vào 1 biến trong file .env
+- Mỗi lần cronjob chạy sẽ chạy vào func schedule() trong file app/Console/Kernel.php
+- Các user được tìm thấy với hashtag sẽ được lưu ID vào 1 file theo đường dẫn storage/app/public/userList.json 
+- Sau đó sẽ tiến hành follow danh sách ID trong file này
+- Các user đã follow được sẽ được gọi thông qua api
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](http://patreon.com/taylorotwell):
-
-- **[Vehikl](http://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Styde](https://styde.net)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
